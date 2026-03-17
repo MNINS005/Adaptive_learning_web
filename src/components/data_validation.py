@@ -2,7 +2,7 @@ import sys
 import pandas as pd
 
 from src.logger import logger
-from src.exception import AppException
+from src.exception import CustomException
 from src.entity.config_entity import DataValidationConfig
 from src.entity.artifact_entity import (
     DataIngestionArtifact,
@@ -28,7 +28,7 @@ class DataValidation:
             return True
 
         except Exception as e:
-            raise AppException(e, sys)
+            raise CustomException(e, sys)
 
     def validate_min_users(self, df: pd.DataFrame) -> bool:
         try:
@@ -42,7 +42,7 @@ class DataValidation:
             return True
 
         except Exception as e:
-            raise AppException(e, sys)
+            raise CustomException(e, sys)
 
     def validate_min_attempts(self, df: pd.DataFrame) -> bool:
         try:
@@ -55,7 +55,7 @@ class DataValidation:
             return True
 
         except Exception as e:
-            raise AppException(e, sys)
+            raise CustomException(e, sys)
 
     def validate_no_nulls(self, df: pd.DataFrame) -> bool:
         try:
@@ -67,7 +67,7 @@ class DataValidation:
             return True
 
         except Exception as e:
-            raise AppException(e, sys)
+            raise CustomException(e, sys)
 
     def initiate_data_validation(
         self, artifact: DataIngestionArtifact
@@ -100,4 +100,4 @@ class DataValidation:
             )
 
         except Exception as e:
-            raise AppException(e, sys)
+            raise CustomException(e, sys)

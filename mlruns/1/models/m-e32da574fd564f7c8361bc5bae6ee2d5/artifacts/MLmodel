@@ -1,0 +1,20 @@
+artifact_path: file:///C:/Users/ankus/OneDrive/Desktop/Adaptive_learning_web/mlruns/1/models/m-e32da574fd564f7c8361bc5bae6ee2d5/artifacts
+flavors:
+  keras:
+    data: data
+    keras_backend: tensorflow
+    keras_version: 3.12.1
+    save_exported_model: false
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.keras
+    python_version: 3.10.19
+mlflow_version: 3.10.1
+model_id: m-e32da574fd564f7c8361bc5bae6ee2d5
+model_size_bytes: 10084302
+model_uuid: m-e32da574fd564f7c8361bc5bae6ee2d5
+prompts: null
+run_id: 53345f55a74c485d9ca4491b9cfb0d3b
+utc_time_created: '2026-03-17 20:49:29.569937'

@@ -1,10 +1,11 @@
 from dataclasses import dataclass
+import os
 from src.constants import (
     ARTIFACT_DIR, DKT_HIDDEN_SIZE, DKT_DROPOUT, DKT_BATCH_SIZE,
-    DKT_EPOCHS, DKT_LEARNING_RATE, NUM_QUESTIONS,
-    DKT_MODEL_PATH, RL_POLICY_PATH,
+    DKT_EPOCHS, DKT_LEARNING_RATE, DKT_MODEL_DIR, NUM_QUESTIONS,
+    DKT_MODEL_PATH, RL_POLICY_DIR, RL_POLICY_PATH,
     EMBEDDING_MODEL, EMBEDDING_DIM,
-    MLFLOW_EXPERIMENT
+    MLFLOW_EXPERIMENT, ZPD_DELTA
 )
 
 @dataclass
@@ -17,6 +18,12 @@ class DataIngestionConfig:
 class DataValidationConfig:
     required_columns: tuple = ("user_id", "question_id", "is_correct")
     min_unique_users: int   = 10
+    min_attempts:     int =  50
+@dataclass
+class DataTransformationConfig:
+    artifact_dir:    str = ARTIFACT_DIR
+    transformed_dir: str = os.path.join(ARTIFACT_DIR, "transformed")
+    num_questions:   int = NUM_QUESTIONS
 
 @dataclass
 class DKTTrainerConfig:
@@ -27,12 +34,16 @@ class DKTTrainerConfig:
     epochs:         int   = DKT_EPOCHS
     learning_rate:  float = DKT_LEARNING_RATE
     model_path:     str   = DKT_MODEL_PATH
+    model_dir:      str   = DKT_MODEL_DIR
+    mlflow_experiment: str = MLFLOW_EXPERIMENT
 
 @dataclass
 class RLTrainerConfig:
-    policy_path:    str   = RL_POLICY_PATH
-    learning_rate:  float = 0.001
-    episodes:       int   = 1000
+    policy_path:   str   = RL_POLICY_PATH
+    policy_dir:    str   = RL_POLICY_DIR
+    learning_rate: float = 0.001
+    episodes:      int   = 1000
+    zpd_delta:     float = ZPD_DELTA
 
 @dataclass
 class ModelEvaluationConfig:
