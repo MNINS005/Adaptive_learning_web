@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+
+  postgres:
+    image: ankane/pgvector
+    container_name: adaptive_pg
+    restart: always
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: adaptive_db
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
