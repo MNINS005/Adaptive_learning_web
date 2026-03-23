@@ -136,9 +136,11 @@ celerybeat.pid
 
 # Environments
 .env
+.env.*
 .envrc
 .venv
 env/
+.env.docker/
 venv/
 ENV/
 env.bak/
@@ -211,4 +213,3 @@ mlruns/
 notebook/backup.sql
 notebook/*.csv
 notebook/*.zip
-.env.docker
