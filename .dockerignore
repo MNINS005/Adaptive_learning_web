@@ -1,0 +1,18 @@
+```
+
+---
+
+## `.dockerignore`
+```
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.env
+mlruns/
+logs/
+.git/
+notebook/
+*.log
+.dockerignore
