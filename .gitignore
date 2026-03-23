@@ -211,3 +211,4 @@ mlruns/
 notebook/backup.sql
 notebook/*.csv
 notebook/*.zip
+.env.docker
