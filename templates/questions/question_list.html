@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Questions | Adaptive Learning{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+    <h1>Questions</h1>
+    <form method="get" class="inline-form">
+        <input type="text" name="topic" value="{{ topic|default:'' }}" placeholder="Filter by topic">
+        <input type="number" name="limit" value="{{ limit }}" min="1">
+        <button type="submit">Filter</button>
+    </form>
+</section>
+
+<div class="question-list">
+    {% for question in questions %}
+        <article class="question-item">
+            <h2>{{ question.topic|default:"General" }}</h2>
+            <p>{{ question.content }}</p>
+            <div class="meta">
+                <span>Difficulty: {{ question.difficulty|default:"N/A" }}</span>
+                {% if question.leetcode_url %}
+                    <a href="{{ question.leetcode_url }}">LeetCode</a>
+                {% endif %}
+            </div>
+        </article>
+    {% empty %}
+        <p>No questions found.</p>
+    {% endfor %}
+</div>
+{% endblock %}

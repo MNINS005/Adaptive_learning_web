@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Users | Adaptive Learning{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+    <h1>Learners</h1>
+    <a class="button" href="{% url 'users:register' %}">Create Learner</a>
+</section>
+
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Joined</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+                <tr>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.created_at }}</td>
+                    <td><a href="{% url 'users:profile' user.id %}">Profile</a></td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="4">No learners found.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

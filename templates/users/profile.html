@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}{{ profile_user.username }} | Adaptive Learning{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+    <h1>{{ profile_user.username }}</h1>
+    <p>{{ profile_user.email }}</p>
+</section>
+
+<section class="stats">
+    <div>
+        <span>Total Attempts</span>
+        <strong>{{ total_attempts }}</strong>
+    </div>
+    <div>
+        <span>Correct</span>
+        <strong>{{ correct_attempts }}</strong>
+    </div>
+    <div>
+        <span>Accuracy</span>
+        <strong>{{ accuracy }}</strong>
+    </div>
+</section>
+
+<section class="actions">
+    <a class="button" href="{% url 'questions:next' profile_user.id %}">Next Question</a>
+    <a class="button" href="{% url 'learning:progress' profile_user.id %}">Progress</a>
+    <a class="button" href="{% url 'learning:knowledge' profile_user.id %}">Knowledge State</a>
+</section>
+
+<section>
+    <h2>Topic Skills</h2>
+    {% if topic_skills %}
+        <ul class="list">
+            {% for topic, score in topic_skills.items %}
+                <li><span>{{ topic }}</span><strong>{{ score }}</strong></li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No knowledge state yet.</p>
+    {% endif %}
+</section>
+{% endblock %}

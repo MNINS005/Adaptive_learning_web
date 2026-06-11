@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Knowledge | Adaptive Learning{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+    <h1>{{ learner.username }} Knowledge State</h1>
+</section>
+
+<ul class="list">
+    {% for state in states %}
+        <li><span>{{ state.topic }}</span><strong>{{ state.skill_score }}</strong></li>
+    {% empty %}
+        <li>No knowledge state yet. Log attempts to begin tracking.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Progress | Adaptive Learning{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+    <h1>{{ learner.username }} Progress</h1>
+</section>
+
+<section>
+    <h2>Topic Progress</h2>
+    <ul class="list">
+        {% for state in topic_progress %}
+            <li><span>{{ state.topic }}</span><strong>{{ state.skill_score }}</strong></li>
+        {% empty %}
+            <li>No topic progress yet.</li>
+        {% endfor %}
+    </ul>
+</section>
+
+<section>
+    <h2>Recent Attempts</h2>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Question</th>
+                    <th>Topic</th>
+                    <th>Correct</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for attempt in recent_attempts %}
+                    <tr>
+                        <td>{{ attempt.question.content|truncatechars:70 }}</td>
+                        <td>{{ attempt.question.topic }}</td>
+                        <td>{{ attempt.is_correct }}</td>
+                        <td>{{ attempt.time_taken|default:"N/A" }}</td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="4">No attempts yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

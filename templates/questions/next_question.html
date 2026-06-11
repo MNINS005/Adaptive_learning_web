@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Next Question | Adaptive Learning{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+    <h1>Next Question for {{ learner.username }}</h1>
+    <p>Skill estimate: {{ user_skill }} | Source: {{ source }}</p>
+</section>
+
+{% if question %}
+    <article class="question-detail">
+        <h2>{{ question.topic|default:"General" }}</h2>
+        <p>{{ question.content }}</p>
+        <dl>
+            <dt>Difficulty</dt>
+            <dd>{{ question.difficulty|default:"N/A" }}</dd>
+            {% if question.leetcode_url %}
+                <dt>Practice Link</dt>
+                <dd><a href="{{ question.leetcode_url }}">{{ question.leetcode_url }}</a></dd>
+            {% endif %}
+        </dl>
+    </article>
+{% else %}
+    <p>No question is available.</p>
+{% endif %}
+{% endblock %}

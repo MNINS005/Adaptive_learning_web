@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | Adaptive Learning{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+    <h1>Adaptive Learning Dashboard</h1>
+    <p>Track learners, log attempts, and recommend the next question using the trained DKT and RL pipeline.</p>
+</section>
+
+<section class="grid">
+    <a class="panel" href="{% url 'users:register' %}">
+        <h2>Create Learner</h2>
+        <p>Add a new user to the learning platform.</p>
+    </a>
+    <a class="panel" href="{% url 'questions:list' %}">
+        <h2>Questions</h2>
+        <p>Browse available DSA questions by topic and difficulty.</p>
+    </a>
+    <a class="panel" href="{% url 'attempts:log' %}">
+        <h2>Log Attempt</h2>
+        <p>Record correctness, time taken, and update knowledge state.</p>
+    </a>
+    <a class="panel" href="{% url 'learning:retrain' %}">
+        <h2>Retrain Model</h2>
+        <p>Start the training pipeline in the background.</p>
+    </a>
+</section>
+{% endblock %}
