@@ -1,6 +1,6 @@
 from django.contrib import messages
+from django.contrib.auth.hashers import check_password, make_password
 from django.shortcuts import get_object_or_404, redirect, render
-from passlib.hash import bcrypt
 
 from attempts.models import Attempt
 from learning.models import KnowledgeState
@@ -24,7 +24,7 @@ def register(request):
                 user = User.objects.create(
                     username=username,
                     email=email,
-                    password=bcrypt.hash(form.cleaned_data["password"]),
+                    password=make_password(form.cleaned_data["password"]),
                 )
                 request.session["user_id"] = str(user.id)
                 messages.success(request, "Account created successfully.")
@@ -43,7 +43,7 @@ def login_view(request):
             password = form.cleaned_data["password"]
             user = User.objects.filter(email=email).first()
 
-            if user and bcrypt.verify(password, user.password):
+            if user and check_password(password, user.password):
                 request.session["user_id"] = str(user.id)
                 messages.success(request, f"Welcome back, {user.username}.")
                 return redirect("users:profile", user_id=user.id)

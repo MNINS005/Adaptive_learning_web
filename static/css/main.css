@@ -59,6 +59,19 @@ h2 {
     margin: 0 0 8px;
 }
 
+.eyebrow {
+    margin: 0 0 8px;
+    color: #667085;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.section {
+    margin-top: 24px;
+    padding: 18px 0;
+}
+
 .grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));

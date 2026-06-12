@@ -48,7 +48,7 @@ TEMPLATES = [{
 
 WSGI_APPLICATION = "core.wsgi.application"
 
-# ── Database ───────────────────────────────────────────────────────────
+# Database
 DATABASES = {
     "default": {
         "ENGINE"  : "django.db.backends.postgresql",
@@ -60,7 +60,6 @@ DATABASES = {
     }
 }
 
-# ── DRF ────────────────────────────────────────────────────────────────
 STATIC_URL  = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

@@ -10,7 +10,7 @@ from .models import KnowledgeState
 
 
 def home(request):
-    return render(request, "learning/home.html")
+    return render(request, "learning/index.html")
 
 
 def progress(request, user_id):
