@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import dj_database_url
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -7,8 +8,12 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-changeme")
-DEBUG      = True
-ALLOWED_HOSTS = ["*"]
+DEBUG = "RENDER" not in os.environ
+
+ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+RENDER_EXTERNAL_HOSTNAME = os.getenv("RENDER_EXTERNAL_HOSTNAME")
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -25,6 +30,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -50,18 +56,26 @@ WSGI_APPLICATION = "core.wsgi.application"
 
 # Database
 DATABASES = {
-    "default": {
-        "ENGINE"  : "django.db.backends.postgresql",
-        "NAME"    : os.getenv("DB_NAME",     "learning_platform_project"),
-        "USER"    : os.getenv("DB_USER",     "postgres"),
-        "PASSWORD": os.getenv("DB_PASSWORD", ""),
-        "HOST"    : os.getenv("DB_HOST",     "localhost"),
-        "PORT"    : os.getenv("DB_PORT",     "5432"),
-    }
+    "default": dj_database_url.config(
+        default=(
+            f"postgresql://{os.getenv('DB_USER', 'postgres')}:"
+            f"{os.getenv('DB_PASSWORD', '')}@"
+            f"{os.getenv('DB_HOST', 'localhost')}:"
+            f"{os.getenv('DB_PORT', '5432')}/"
+            f"{os.getenv('DB_NAME', 'learning_platform_project')}"
+        ),
+        conn_max_age=600,
+    )
 }
 
 STATIC_URL  = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LANGUAGE_CODE = "en-us"
 TIME_ZONE     = "UTC"
