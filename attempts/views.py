@@ -5,10 +5,20 @@ from django.shortcuts import redirect, render
 
 from learning.models import KnowledgeState
 from src.logger import logger
-from src.utils.main_utils import compute_reward
 
 from .forms import AttemptForm
 from .models import Attempt
+
+
+def compute_reward(is_correct, question_difficulty, user_skill, answer_time):
+    difficulty = question_difficulty or 0.5
+    reward = 1.0 if is_correct else -0.3
+    reward += max(0, difficulty - user_skill) * (0.5 if is_correct else 0.2)
+    if answer_time <= 30 and is_correct:
+        reward += 0.1
+    if difficulty < user_skill - 0.3:
+        reward -= 0.5
+    return float(reward)
 
 
 def log_attempt(request):

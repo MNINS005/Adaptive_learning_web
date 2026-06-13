@@ -4,4 +4,3 @@ dj-database-url>=2.2,<3.0
 gunicorn>=22.0,<24.0
 whitenoise[brotli]>=6.6,<7.0
 python-dotenv>=1.0,<2.0
-numpy>=1.26,<2.0

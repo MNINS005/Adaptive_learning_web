@@ -1,20 +1,10 @@
 import os
 
-import numpy as np
 from django.shortcuts import get_object_or_404, render
 
 from attempts.models import Attempt
 from learning.models import KnowledgeState
-from src.constants import ARTIFACT_DIR, DKT_MODEL_PATH, RL_POLICY_PATH
 from src.logger import logger
-from src.utils.main_utils import (
-    encode_user_sequence,
-    filter_candidate_questions,
-    get_knowledge_state,
-    load_dkt_model,
-    load_json,
-    load_rl_agent,
-)
 from users.models import User
 
 from .models import Question
@@ -31,17 +21,33 @@ TOPIC_MAP = {
     "general_cs": 8,
 }
 
-try:
-    dkt_model = load_dkt_model(DKT_MODEL_PATH)
-    rl_agent = load_rl_agent(RL_POLICY_PATH)
-    question_index = load_json(os.path.join(ARTIFACT_DIR, "transformed", "question_index.json"))
-    num_questions = len(question_index)
-    logger.info(f"Models loaded - {num_questions} questions indexed")
-except Exception as exc:
-    dkt_model = rl_agent = None
-    question_index = {}
-    num_questions = 0
-    logger.warning(f"Models not loaded: {exc}")
+ENABLE_ML_RECOMMENDER = os.getenv("ENABLE_ML_RECOMMENDER") == "1"
+dkt_model = rl_agent = None
+question_index = {}
+num_questions = 0
+
+if ENABLE_ML_RECOMMENDER:
+    try:
+        from src.constants import ARTIFACT_DIR, DKT_MODEL_PATH, RL_POLICY_PATH
+        from src.utils.main_utils import load_dkt_model, load_json, load_rl_agent
+
+        dkt_model = load_dkt_model(DKT_MODEL_PATH)
+        rl_agent = load_rl_agent(RL_POLICY_PATH)
+        question_index = load_json(os.path.join(ARTIFACT_DIR, "transformed", "question_index.json"))
+        num_questions = len(question_index)
+        logger.info(f"Models loaded - {num_questions} questions indexed")
+    except Exception as exc:
+        logger.warning(f"Models not loaded: {exc}")
+
+
+def fallback_question_for(user):
+    weakest_state = KnowledgeState.objects.filter(user=user).order_by("skill_score").first()
+    questions = Question.objects.all()
+    if weakest_state:
+        topic_match = questions.filter(topic=weakest_state.topic).first()
+        if topic_match:
+            return topic_match
+    return questions.first()
 
 
 def question_list(request):
@@ -64,9 +70,16 @@ def next_question(request, user_id):
     user_skill = 0.0
 
     if not dkt_model or not rl_agent:
-        question = Question.objects.first()
+        question = fallback_question_for(user)
         source = "fallback"
     else:
+        import numpy as np
+        from src.utils.main_utils import (
+            encode_user_sequence,
+            filter_candidate_questions,
+            get_knowledge_state,
+        )
+
         attempts = Attempt.objects.filter(user=user).order_by("attempted_at")
         attempt_dicts = [
             {"question_id": str(attempt.question_id), "is_correct": int(attempt.is_correct)}
