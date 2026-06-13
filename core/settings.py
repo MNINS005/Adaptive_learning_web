@@ -1,7 +1,11 @@
 import os
 from pathlib import Path
-import dj_database_url
 from dotenv import load_dotenv
+
+try:
+    import dj_database_url
+except ImportError:
+    dj_database_url = None
 
 load_dotenv()
 
@@ -55,17 +59,28 @@ TEMPLATES = [{
 WSGI_APPLICATION = "core.wsgi.application"
 
 # Database
-DATABASES = {
-    "default": dj_database_url.config(
-        default=(
-            f"postgresql://{os.getenv('DB_USER', 'postgres')}:"
-            f"{os.getenv('DB_PASSWORD', '')}@"
-            f"{os.getenv('DB_HOST', 'localhost')}:"
-            f"{os.getenv('DB_PORT', '5432')}/"
-            f"{os.getenv('DB_NAME', 'learning_platform_project')}"
-        ),
-        conn_max_age=600,
-    )
+DATABASE_URL = os.getenv("DATABASE_URL")
+if DATABASE_URL and "sslmode=" not in DATABASE_URL:
+    separator = "&" if "?" in DATABASE_URL else "?"
+    DATABASE_URL = f"{DATABASE_URL}{separator}sslmode=require"
+
+if DATABASE_URL and dj_database_url:
+    DATABASES = {
+        "default": dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+        )
+    }
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.getenv("DB_NAME", "learning_platform_project"),
+            "USER": os.getenv("DB_USER", "postgres"),
+            "PASSWORD": os.getenv("DB_PASSWORD", ""),
+            "HOST": os.getenv("DB_HOST", "localhost"),
+            "PORT": os.getenv("DB_PORT", "5432"),
+        }
 }
 
 STATIC_URL  = "/static/"
