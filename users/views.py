@@ -73,14 +73,28 @@ def profile(request, user_id):
     correct = attempts.filter(is_correct=True).count()
     states = KnowledgeState.objects.filter(user=user)
     topic_skills = {ks.topic: round(ks.skill_score, 4) for ks in states}
+    topic_progress = [
+        {
+            "topic": ks.topic,
+            "score": round(ks.skill_score, 4),
+            "percent": round(ks.skill_score * 100),
+        }
+        for ks in states.order_by("topic")
+    ]
+
+    from questions.views import fallback_question_for
+    recommended_question = fallback_question_for(user)
 
     context = {
         "profile_user": user,
         "total_attempts": total,
         "correct_attempts": correct,
         "accuracy": round(correct / total, 4) if total else 0.0,
+        "accuracy_percent": round((correct / total) * 100) if total else 0,
         "strongest_topic": max(topic_skills, key=topic_skills.get) if topic_skills else None,
         "weakest_topic": min(topic_skills, key=topic_skills.get) if topic_skills else None,
         "topic_skills": topic_skills,
+        "topic_progress": topic_progress,
+        "recommended_question": recommended_question,
     }
     return render(request, "users/profile.html", context)

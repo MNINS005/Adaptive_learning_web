@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | Smart Interview Prep{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+    <div>
+        <p class="eyebrow">Interview Preparation</p>
+        <h1>Smart DSA Practice Dashboard</h1>
+        <p>Practice topic-wise questions, record results, and track progress toward interview readiness.</p>
+    </div>
+</section>
+
+<section class="grid">
+    <a class="panel" href="{% url 'users:register' %}">
+        <h2>Start Practice</h2>
+        <p>Create a learner account and begin tracking DSA progress.</p>
+    </a>
+    <a class="panel" href="{% url 'questions:list' %}">
+        <h2>Question Bank</h2>
+        <p>View questions and filter them by topic.</p>
+    </a>
+    <a class="panel" href="{% url 'questions:list' %}">
+        <h2>Practice Flow</h2>
+        <p>Open a recommended problem and record the result from the question page.</p>
+    </a>
+</section>
+{% endblock %}

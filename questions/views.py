@@ -21,6 +21,8 @@ TOPIC_MAP = {
     "general_cs": 8,
 }
 
+DIFFICULTY_LEVELS = ["Easy", "Medium", "Hard"]
+
 ENABLE_ML_RECOMMENDER = os.getenv("ENABLE_ML_RECOMMENDER") == "1"
 dkt_model = rl_agent = None
 question_index = {}
@@ -40,6 +42,14 @@ if ENABLE_ML_RECOMMENDER:
         logger.warning(f"Models not loaded: {exc}")
 
 
+def difficulty_level_for_skill(skill_score):
+    if skill_score < 0.4:
+        return "Easy"
+    if skill_score < 0.7:
+        return "Medium"
+    return "Hard"
+
+
 def fallback_question_for(user):
     attempted_question_ids = Attempt.objects.filter(user=user).values_list("question_id", flat=True)
     weakest_state = KnowledgeState.objects.filter(user=user).order_by("skill_score").first()
@@ -49,29 +59,86 @@ def fallback_question_for(user):
         return Question.objects.order_by("topic", "difficulty", "title").first()
 
     if weakest_state:
+        target_level = difficulty_level_for_skill(weakest_state.skill_score)
         topic_match = (
             questions
             .filter(topic=weakest_state.topic)
+            .filter(difficulty_level=target_level)
             .order_by("difficulty", "title")
             .first()
         )
         if topic_match:
             return topic_match
 
+        topic_fallback = (
+            questions
+            .filter(topic=weakest_state.topic)
+            .order_by("difficulty", "title")
+            .first()
+        )
+        if topic_fallback:
+            return topic_fallback
+
     return questions.order_by("topic", "difficulty", "title").first()
 
 
 def question_list(request):
     topic = request.GET.get("topic")
+    difficulty_level = request.GET.get("difficulty_level")
     limit = int(request.GET.get("limit", 20))
     questions = Question.objects.all()
+    topics = (
+        Question.objects
+        .exclude(topic__isnull=True)
+        .exclude(topic="")
+        .order_by("topic")
+        .values_list("topic", flat=True)
+        .distinct()
+    )
     if topic:
         questions = questions.filter(topic=topic)
+    if difficulty_level:
+        questions = questions.filter(difficulty_level=difficulty_level)
+
+    questions = list(questions[:limit])
+    current_user = None
+    user_id = request.session.get("user_id")
+    if user_id:
+        current_user = User.objects.filter(id=user_id).first()
+
+    if current_user:
+        attempts = (
+            Attempt.objects
+            .filter(user=current_user, question__in=questions)
+            .order_by("question_id", "-attempted_at")
+        )
+        latest_by_question = {}
+        for attempt in attempts:
+            latest_by_question.setdefault(attempt.question_id, attempt)
+
+        for question in questions:
+            attempt = latest_by_question.get(question.id)
+            if not attempt:
+                question.practice_status = "Not Attempted"
+            elif attempt.is_correct:
+                question.practice_status = "Solved"
+            else:
+                question.practice_status = "Attempted"
+    else:
+        for question in questions:
+            question.practice_status = "Login to track"
 
     return render(
         request,
         "questions/question_list.html",
-        {"questions": questions[:limit], "topic": topic, "limit": limit},
+        {
+            "questions": questions,
+            "topic": topic,
+            "difficulty_level": difficulty_level,
+            "topics": topics,
+            "difficulty_levels": DIFFICULTY_LEVELS,
+            "limit": limit,
+        },
     )
 
 
@@ -102,6 +169,7 @@ def next_question(request, user_id):
 
         weakest_state = KnowledgeState.objects.filter(user=user).order_by("skill_score").first()
         target_topic = weakest_state.topic if weakest_state else None
+        target_level = difficulty_level_for_skill(weakest_state.skill_score) if weakest_state else None
         attempted_question_ids = set(
             Attempt.objects.filter(user=user).values_list("question_id", flat=True)
         )
@@ -112,6 +180,12 @@ def next_question(request, user_id):
         ]
 
         candidates = filter_candidate_questions(available_questions, user_skill, target_topic)
+        if target_level:
+            level_candidates = [
+                question for question in candidates
+                if question.difficulty_level == target_level
+            ]
+            candidates = level_candidates or candidates
         if not candidates:
             candidates = available_questions[:10]
 

@@ -60,7 +60,10 @@ def log_attempt(request):
 
                 threading.Thread(target=retrain, daemon=True).start()
 
-            messages.success(request, "Attempt logged successfully.")
+            if is_correct:
+                messages.success(request, "Nice work. Your progress was updated.")
+            else:
+                messages.info(request, "Attempt saved. Try another problem and keep going.")
             next_url = request.POST.get("next")
             if next_url and url_has_allowed_host_and_scheme(
                 next_url,

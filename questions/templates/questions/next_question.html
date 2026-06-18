@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Next Question | Adaptive Learning{% endblock %}
+{% block title %}Next Question | Smart Interview Prep{% endblock %}
 
 {% block content %}
 <section class="recommendation-header">
@@ -61,11 +61,11 @@
         {% csrf_token %}
         <input type="hidden" name="user" value="{{ learner.id }}">
         <input type="hidden" name="question" value="{{ question.id }}">
-        <input type="hidden" name="next" value="{% url 'questions:list' %}">
+        <input type="hidden" name="next" value="{% url 'questions:next' learner.id %}">
 
         <div class="attempt-panel-header">
             <h2>Update Attempt</h2>
-            <p>Mark the result after practicing this problem.</p>
+            <p>Save the result and move to your next recommended problem.</p>
         </div>
 
         <div class="attempt-choice-grid">
@@ -87,7 +87,7 @@
         </div>
 
         <div class="attempt-panel-actions">
-            <button type="submit" class="attempt-save-button">Save Attempt</button>
+            <button type="submit" class="attempt-save-button">Save & Get Next</button>
         </div>
     </form>
 

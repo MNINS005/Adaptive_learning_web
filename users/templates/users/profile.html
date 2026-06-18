@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ profile_user.username }} | Smart Interview Prep{% endblock %}
+
+{% block content %}
+<section class="profile-hero">
+    <img class="profile-hero-avatar" src="{% static 'img/default-avatar.svg' %}" alt="">
+    <div>
+        <p class="eyebrow">Learner Profile</p>
+        <h1>{{ profile_user.username }}</h1>
+        <p>{{ profile_user.email }}</p>
+    </div>
+</section>
+
+<section class="stats">
+    <div>
+        <span>Total Attempts</span>
+        <strong>{{ total_attempts }}</strong>
+    </div>
+    <div>
+        <span>Correct</span>
+        <strong>{{ correct_attempts }}</strong>
+    </div>
+    <div>
+        <span>Accuracy</span>
+        <strong>{{ accuracy_percent }}%</strong>
+    </div>
+    <div>
+        <span>Weakest Topic</span>
+        <strong>{{ weakest_topic|default:"N/A" }}</strong>
+    </div>
+    <div>
+        <span>Strongest Topic</span>
+        <strong>{{ strongest_topic|default:"N/A" }}</strong>
+    </div>
+</section>
+
+<section class="actions">
+    <a class="button" href="{% url 'questions:next' profile_user.id %}">Next Question</a>
+    <a class="button" href="{% url 'learning:progress' profile_user.id %}">Progress</a>
+    <a class="button" href="{% url 'learning:knowledge' profile_user.id %}">Knowledge State</a>
+</section>
+
+{% if recommended_question %}
+<section class="profile-recommendation">
+    <div>
+        <p class="eyebrow">Next Practice Target</p>
+        <h2>{{ recommended_question.title }}</h2>
+        <p>{{ recommended_question.topic|default:"general_cs" }} | {{ recommended_question.difficulty_level|default:"N/A" }}</p>
+    </div>
+    <a class="button" href="{% url 'questions:next' profile_user.id %}">Continue Practice</a>
+</section>
+{% endif %}
+
+<section>
+    <h2>Topic Skills</h2>
+    {% if topic_progress %}
+        <div class="progress-list">
+            {% for item in topic_progress %}
+                <div class="progress-row">
+                    <div class="progress-row-head">
+                        <span>{{ item.topic }}</span>
+                        <strong>{{ item.percent }}%</strong>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill" style="width: {{ item.percent }}%;"></div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No knowledge state yet.</p>
+    {% endif %}
+</section>
+{% endblock %}

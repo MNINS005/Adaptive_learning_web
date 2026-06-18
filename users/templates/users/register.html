@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Register | Adaptive Learning{% endblock %}
+{% block title %}Register | Smart Interview Prep{% endblock %}
 
 {% block content %}
 <section class="form-page">
@@ -10,5 +10,9 @@
         {{ form.as_p }}
         <button type="submit">Register</button>
     </form>
+    <p class="form-switch">
+        Already have an account?
+        <a href="{% url 'users:login' %}">Login</a>
+    </p>
 </section>
 {% endblock %}
