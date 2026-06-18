@@ -16,4 +16,4 @@ class Attempt(models.Model):
         ordering = ["-attempted_at"]
 
     def __str__(self):
-        return f"{self.user.username} -> {self.question.content[:30]} -> {self.is_correct}"
+        return f"{self.user.username} -> {self.question.title[:30]} -> {self.is_correct}"

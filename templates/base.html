@@ -13,18 +13,28 @@
             <a class="brand" href="{% url 'learning:home' %}">Adaptive Learning</a>
             <div class="nav-links">
                 <a href="{% url 'questions:list' %}">Questions</a>
-                <a href="{% url 'attempts:log' %}">Log Attempt</a>
                 <a href="{% url 'users:list' %}">Users</a>
-                <a href="{% url 'users:login' %}">Login</a>
+                {% if current_user %}
+                    <a class="profile-chip" href="{% url 'users:profile' current_user.id %}" title="{{ current_user.username }}">
+                        <span class="profile-avatar">{{ current_user.username|first|upper }}</span>
+                        <span class="profile-name">{{ current_user.username }}</span>
+                    </a>
+                    <a href="{% url 'users:logout' %}">Logout</a>
+                {% else %}
+                    <a href="{% url 'users:login' %}">Login</a>
+                {% endif %}
             </div>
         </nav>
     </header>
 
     <main class="container">
         {% if messages %}
-            <div class="messages">
+            <div class="flash-messages">
                 {% for message in messages %}
-                    <p class="message {{ message.tags }}">{{ message }}</p>
+                    <div class="flash-message {{ message.tags }}">
+                        <span class="flash-dot"></span>
+                        <span>{{ message }}</span>
+                    </div>
                 {% endfor %}
             </div>
         {% endif %}

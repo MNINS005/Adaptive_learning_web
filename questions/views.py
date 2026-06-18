@@ -41,13 +41,24 @@ if ENABLE_ML_RECOMMENDER:
 
 
 def fallback_question_for(user):
+    attempted_question_ids = Attempt.objects.filter(user=user).values_list("question_id", flat=True)
     weakest_state = KnowledgeState.objects.filter(user=user).order_by("skill_score").first()
-    questions = Question.objects.all()
+    questions = Question.objects.exclude(id__in=attempted_question_ids)
+
+    if not questions.exists():
+        return Question.objects.order_by("topic", "difficulty", "title").first()
+
     if weakest_state:
-        topic_match = questions.filter(topic=weakest_state.topic).first()
+        topic_match = (
+            questions
+            .filter(topic=weakest_state.topic)
+            .order_by("difficulty", "title")
+            .first()
+        )
         if topic_match:
             return topic_match
-    return questions.first()
+
+    return questions.order_by("topic", "difficulty", "title").first()
 
 
 def question_list(request):
@@ -91,9 +102,18 @@ def next_question(request, user_id):
 
         weakest_state = KnowledgeState.objects.filter(user=user).order_by("skill_score").first()
         target_topic = weakest_state.topic if weakest_state else None
-        candidates = filter_candidate_questions(list(Question.objects.all()), user_skill, target_topic)
+        attempted_question_ids = set(
+            Attempt.objects.filter(user=user).values_list("question_id", flat=True)
+        )
+        available_questions = [
+            question
+            for question in Question.objects.all()
+            if question.id not in attempted_question_ids
+        ]
+
+        candidates = filter_candidate_questions(available_questions, user_skill, target_topic)
         if not candidates:
-            candidates = list(Question.objects.all()[:10])
+            candidates = available_questions[:10]
 
         scores = [
             rl_agent.forward(state, question.difficulty, TOPIC_MAP.get(question.topic, 0))

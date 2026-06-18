@@ -27,16 +27,16 @@
                     <th>Question</th>
                     <th>Topic</th>
                     <th>Correct</th>
-                    <th>Time</th>
+                    <th>Attempted At</th>
                 </tr>
             </thead>
             <tbody>
                 {% for attempt in recent_attempts %}
                     <tr>
-                        <td>{{ attempt.question.content|truncatechars:70 }}</td>
+                        <td>{{ attempt.question.title|truncatechars:70 }}</td>
                         <td>{{ attempt.question.topic }}</td>
                         <td>{{ attempt.is_correct }}</td>
-                        <td>{{ attempt.time_taken|default:"N/A" }}</td>
+                        <td>{{ attempt.attempted_at|date:"M d, Y" }}</td>
                     </tr>
                 {% empty %}
                     <tr><td colspan="4">No attempts yet.</td></tr>

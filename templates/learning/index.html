@@ -7,7 +7,7 @@
     <div>
         <p class="eyebrow">Plain Django learning platform</p>
         <h1>Adaptive Learning Dashboard</h1>
-        <p>Manage learners, browse DSA questions, log attempts, and review topic-wise skill progress.</p>
+        <p>Manage learners, browse DSA questions, record practice results, and review topic-wise skill progress.</p>
     </div>
 </section>
 
@@ -20,9 +20,9 @@
         <h2>Question Bank</h2>
         <p>View questions and filter them by topic.</p>
     </a>
-    <a class="panel" href="{% url 'attempts:log' %}">
-        <h2>Log Attempt</h2>
-        <p>Record correctness and update the learner knowledge state.</p>
+    <a class="panel" href="{% url 'questions:list' %}">
+        <h2>Practice Flow</h2>
+        <p>Open a recommended problem and record the result from the question page.</p>
     </a>
     <a class="panel" href="{% url 'users:list' %}">
         <h2>Learners</h2>

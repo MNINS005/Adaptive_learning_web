@@ -59,7 +59,6 @@ class Command(BaseCommand):
 
                 title = (row.get("title") or "").strip()
                 url = (row.get("url") or "").strip()
-                description = (row.get("description") or "").strip()
                 difficulty_label = (row.get("difficulty") or "").strip().lower()
                 related_topics = row.get("related_topics") or ""
 
@@ -68,14 +67,14 @@ class Command(BaseCommand):
 
                 topic = self.get_topic(related_topics)
                 difficulty = DIFFICULTY_MAP.get(difficulty_label, 0.5)
-                content = f"{title}\n\n{description}" if description else title
 
                 question, was_created = Question.objects.update_or_create(
                     leetcode_url=url or None,
                     defaults={
-                        "content": content,
+                        "title": title,
                         "topic": topic,
                         "difficulty": difficulty,
+                        "difficulty_level": difficulty_label.title() if difficulty_label else None,
                         "source": "leetcode",
                     },
                 )
